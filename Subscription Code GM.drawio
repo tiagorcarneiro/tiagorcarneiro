@@ -45,11 +45,11 @@
         <mxCell id="QLcfwFrTYVMNelbYBag8-8" value="EMAIL" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="270" y="410" width="50" height="50" as="geometry" />
         </mxCell>
-        <mxCell id="QLcfwFrTYVMNelbYBag8-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="QLcfwFrTYVMNelbYBag8-9" target="QLcfwFrTYVMNelbYBag8-15">
+        <mxCell id="QLcfwFrTYVMNelbYBag8-22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="QLcfwFrTYVMNelbYBag8-9" target="QLcfwFrTYVMNelbYBag8-21">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="QLcfwFrTYVMNelbYBag8-9" value="&lt;div&gt;To: [EMAIL]&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;Dear [NAME],&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Thank you for subscribing to our newsletter.&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;Se bellow the code to use in Palmares:&lt;/div&gt;&lt;div&gt;[PROMOCODE]&lt;/div&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="185" y="510" width="220" height="510" as="geometry" />
+          <mxGeometry x="185" y="510" width="220" height="450" as="geometry" />
         </mxCell>
         <mxCell id="QLcfwFrTYVMNelbYBag8-11" value="SUBMIT" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
           <mxGeometry x="389" y="310" width="50" height="50" as="geometry" />
@@ -58,10 +58,16 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="QLcfwFrTYVMNelbYBag8-13" value="&lt;b&gt;PROMOCODE&lt;/b&gt;&lt;div&gt;&lt;br&gt;&lt;/div&gt;&lt;div&gt;&lt;span style=&quot;text-align: left;&quot;&gt;WELCOMEJOHN2024&lt;/span&gt;&lt;br&gt;&lt;/div&gt;" style="rounded=0;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="457.5" y="735" width="155" height="60" as="geometry" />
+          <mxGeometry x="457.5" y="705" width="155" height="60" as="geometry" />
         </mxCell>
         <mxCell id="QLcfwFrTYVMNelbYBag8-15" value="END" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
-          <mxGeometry x="377.5" y="1030" width="80" height="80" as="geometry" />
+          <mxGeometry x="495" y="1040" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="QLcfwFrTYVMNelbYBag8-25" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="WIyWlLk6GJQsqaUBKTNV-1" source="QLcfwFrTYVMNelbYBag8-21" target="QLcfwFrTYVMNelbYBag8-15">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="QLcfwFrTYVMNelbYBag8-21" value="SEND&lt;div&gt;&lt;span style=&quot;background-color: initial;&quot;&gt;EMAIL&lt;/span&gt;&lt;/div&gt;" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" vertex="1" parent="WIyWlLk6GJQsqaUBKTNV-1">
+          <mxGeometry x="260" y="1045" width="70" height="70" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
