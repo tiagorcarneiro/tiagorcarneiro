@@ -1,0 +1,481 @@
+<title>Tee Sheet Capacity</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: assumptions rail on the left (the course rules), results column on the right (what the tee sheet can hold); stacks under 920px */
+:root {
+  --bg: #f2f4ef;
+  --surface: #ffffff;
+  --ink: #15231b;
+  --muted: #59695f;
+  --line: #d8ded6;
+  --fairway: #1f5c3d;
+  --rough: #a9c7b1;
+  --flag: #c99512;
+  --block: #c9d0ca;
+  --warn: #a2481f;
+  --display: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e1511; --surface: #15201a; --ink: #e4ece6; --muted: #98a99e; --line: #29372f;
+    --fairway: #62bd8c; --rough: #2d5c41; --flag: #e3b43c; --block: #34413a; --warn: #e88a5e;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e1511; --surface: #15201a; --ink: #e4ece6; --muted: #98a99e; --line: #29372f;
+  --fairway: #62bd8c; --rough: #2d5c41; --flag: #e3b43c; --block: #34413a; --warn: #e88a5e;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 14px; line-height: 1.5;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 24px 48px;
+}
+.wrap { max-width: 1280px; margin: 0 auto; display: flex; flex-direction: column; gap: 24px; }
+header h1 { font-family: var(--display); font-weight: 700; font-size: clamp(26px, 4vw, 38px); line-height: 1.1; margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+header p { margin: 6px 0 0; color: var(--muted); max-width: 70ch; }
+.grid { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 24px; align-items: start; }
+@media (max-width: 920px) { .grid { grid-template-columns: minmax(0, 1fr); } }
+
+aside { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 18px; }
+fieldset { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+legend { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); padding: 0; margin-bottom: 8px; }
+fieldset + fieldset { border-top: 1px solid var(--line); padding-top: 16px; }
+.row { display: grid; grid-template-columns: minmax(0, 1fr) 112px; gap: 10px; align-items: center; }
+.row label { color: var(--ink); }
+.row small, .hint { display: block; color: var(--muted); font-size: 12px; line-height: 1.35; }
+input, select, textarea {
+  font: inherit; color: var(--ink); background: var(--bg); border: 1px solid var(--line); border-radius: 6px; padding: 6px 8px; width: 100%; min-width: 0;
+}
+input[type="number"], input[type="time"] { font-family: var(--mono); font-size: 13px; }
+textarea { font-family: var(--mono); font-size: 12px; min-height: 84px; resize: vertical; }
+input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible { outline: 2px solid var(--fairway); outline-offset: 1px; }
+.check { display: flex; gap: 8px; align-items: flex-start; }
+.check input { width: auto; margin-top: 3px; accent-color: var(--fairway); }
+.week { display: grid; grid-template-columns: 40px minmax(0, 1fr) 92px; gap: 6px 8px; align-items: center; }
+.week span { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.week input:disabled { opacity: 0.35; }
+button.reset { font: inherit; font-size: 12px; background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 6px; padding: 6px 10px; cursor: pointer; align-self: flex-start; }
+button.reset:hover { color: var(--ink); border-color: var(--muted); }
+
+main { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+.tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.tile { background: var(--surface); padding: 14px 16px; display: flex; flex-direction: column; gap: 2px; }
+.tile .k { font-family: var(--mono); font-size: 11px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+.tile .v { font-family: var(--display); font-weight: 700; font-size: 28px; font-variant-numeric: tabular-nums; line-height: 1.15; }
+.tile .s { color: var(--muted); font-size: 12px; }
+.tile.lead .v { color: var(--fairway); }
+
+section.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+section.card h2 { font-family: var(--display); font-weight: 500; font-size: 20px; margin: 0; }
+.head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; align-items: baseline; }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; }
+svg text { fill: var(--muted); font-family: var(--mono); font-size: 11px; }
+svg .grid-line { stroke: var(--line); }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 7px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font-family: var(--mono); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+td { font-family: var(--mono); font-size: 13px; }
+tfoot td { font-weight: 500; border-bottom: 0; color: var(--ink); }
+
+.day-top { display: flex; flex-wrap: wrap; gap: 10px 22px; align-items: end; }
+.day-top label { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--muted); }
+.day-top input { width: 170px; }
+.facts { display: flex; flex-wrap: wrap; gap: 6px 20px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.facts b { color: var(--ink); font-weight: 500; }
+.sheet { max-height: 440px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+.sheet table th { position: sticky; top: 0; background: var(--surface); z-index: 1; }
+.sheet td, .sheet th { text-align: left; }
+.chip { display: inline-block; font-family: var(--mono); font-size: 11px; padding: 1px 8px; border-radius: 999px; border: 1px solid transparent; }
+.chip.c18 { background: var(--fairway); color: var(--surface); }
+.chip.c9 { background: var(--flag); color: #1c1606; }
+.chip.cx { background: transparent; border-color: var(--block); color: var(--muted); }
+.closed-note { color: var(--warn); font-weight: 500; }
+.notes { color: var(--muted); font-size: 13px; max-width: 75ch; display: flex; flex-direction: column; gap: 6px; }
+.notes p { margin: 0; }
+.example { display: inline-block; font-family: var(--mono); font-size: 11px; color: var(--muted); border: 1px dashed var(--line); border-radius: 4px; padding: 1px 6px; margin-left: 6px; vertical-align: 3px; }
+@media (prefers-reduced-motion: no-preference) { .bar { transition: height .2s, y .2s; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Tee Sheet Capacity <span class="example">example course</span></h1>
+    <p>The maximum number of tee times and player rounds a course can sell in a year, from daylight, pace of play, tee spacing and maintenance closures. Change any assumption on the left and every figure updates.</p>
+  </header>
+
+  <div class="grid">
+    <aside id="form">
+      <fieldset>
+        <legend>Course location</legend>
+        <div class="row"><label for="lat">Latitude</label><input id="lat" type="number" step="0.01" value="37.09"></div>
+        <div class="row"><label for="lon">Longitude<small>East +, West −</small></label><input id="lon" type="number" step="0.01" value="-8.11"></div>
+        <div class="row"><label for="tz">Time zone</label><input id="tz" type="text" value="Europe/Lisbon"></div>
+        <div class="row"><label for="year">Year</label><input id="year" type="number" value="2027"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Pace and spacing</legend>
+        <div class="row"><label for="interval">Tee interval<small>minutes between groups</small></label><input id="interval" type="number" min="5" step="1" value="10"></div>
+        <div class="row"><label for="round">18-hole round<small>par time, minutes</small></label><input id="round" type="number" min="60" step="5" value="270"></div>
+        <div class="row"><label for="nine">9-hole time<small>tee 1 to tee 10, minutes</small></label><input id="nine" type="number" min="30" step="5" value="135"></div>
+        <div class="row"><label for="players">Players per tee time</label><input id="players" type="number" min="1" max="5" value="4"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Daylight rules</legend>
+        <div class="row"><label for="earliest">First tee not before</label><input id="earliest" type="time" value="07:30"></div>
+        <div class="row"><label for="srOffset">First tee after sunrise<small>minutes</small></label><input id="srOffset" type="number" step="5" value="10"></div>
+        <div class="row"><label for="buffer">Finish by sunset ±<small>minutes; +20 ≈ civil twilight</small></label><input id="buffer" type="number" step="5" value="0"></div>
+        <label class="check"><input id="twilight" type="checkbox" checked><span>Sell 9-hole tee times once an 18 can no longer finish before dark</span></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Two-tee starts</legend>
+        <label class="check"><input id="twoTee" type="checkbox" checked><span>Also start groups from tee 10, with crossover blocks at both tees</span></label>
+        <div class="row"><label for="tee10Until">Tee 10 starts until</label><input id="tee10Until" type="time" value="11:00"></div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Weekly maintenance</legend>
+        <div class="week" id="week"></div>
+        <span class="hint">Set a weekday to “Late start” for morning maintenance, or “Closed” for a full day.</span>
+      </fieldset>
+
+      <fieldset>
+        <legend>Closed dates</legend>
+        <textarea id="closures" spellcheck="false">2027-03-08..2027-03-10 Hollow tining
+2027-09-13..2027-09-15 Overseeding
+2027-12-25 Christmas</textarea>
+        <span class="hint">One per line: a date or a range (YYYY-MM-DD..YYYY-MM-DD), then an optional reason.</span>
+      </fieldset>
+
+      <fieldset>
+        <legend>Green fees (optional)</legend>
+        <div class="row"><label for="fee18">Average 18-hole fee €</label><input id="fee18" type="number" min="0" step="1" value="95"></div>
+        <div class="row"><label for="fee9">Average 9-hole fee €</label><input id="fee9" type="number" min="0" step="1" value="55"></div>
+      </fieldset>
+
+      <button class="reset" id="reset" type="button">Restore example values</button>
+    </aside>
+
+    <main>
+      <div class="tiles" id="tiles"></div>
+
+      <section class="card">
+        <div class="head">
+          <h2>Player rounds by month</h2>
+          <div class="legend"><span><i style="background:var(--fairway)"></i>18 holes</span><span><i style="background:var(--flag)"></i>9 holes (twilight)</span></div>
+        </div>
+        <div class="scroll"><svg id="chart" viewBox="0 0 720 250" width="100%" role="img" aria-label="Monthly player rounds"></svg></div>
+      </section>
+
+      <section class="card">
+        <h2>Month by month</h2>
+        <div class="scroll"><table id="months"></table></div>
+      </section>
+
+      <section class="card">
+        <div class="head"><h2>Tee sheet for one day</h2></div>
+        <div class="day-top">
+          <label for="day">Date<input id="day" type="date"></label>
+          <div class="facts" id="dayFacts"></div>
+        </div>
+        <div class="sheet" id="sheet"></div>
+      </section>
+
+      <section class="card">
+        <h2>How the figures are worked out</h2>
+        <div class="notes">
+          <p>Sunrise and sunset come from the NOAA solar position formula for the course coordinates, shown in local time with daylight saving.</p>
+          <p>The first tee time is the later of the fixed earliest time, sunrise plus the offset, and any late-start maintenance for that weekday, rounded up to 5 minutes. The last 18-hole tee time is the latest start that still finishes the full round by sunset (plus the buffer).</p>
+          <p>With two-tee starts, every group off tee 1 reaches tee 10 one 9-hole time later, and every 18-hole group off tee 10 comes back to tee 1 the same way. Those crossover slots are blocked. Two tees mainly help on short winter days; on long days they move capacity earlier without adding much.</p>
+          <p>Figures are a theoretical maximum: every slot sold with a full group. Multiply by your expected occupancy to forecast.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const WEEK = [[1, "Mon"], [2, "Tue"], [3, "Wed"], [4, "Thu"], [5, "Fri"], [6, "Sat"], [0, "Sun"]];
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const DEFAULT_WEEK = { 1: { mode: "late", time: "10:00" } };
+  const FIELDS = ["lat", "lon", "tz", "year", "interval", "round", "nine", "players", "earliest", "srOffset", "buffer", "twilight", "twoTee", "tee10Until", "closures", "fee18", "fee9"];
+  const STORE = "tee-capacity-v1";
+  const defaults = {};
+
+  // Weekly maintenance rows
+  const week = $("week");
+  WEEK.forEach(([d, name]) => {
+    week.insertAdjacentHTML("beforeend",
+      `<span>${name}</span>
+       <select id="wk${d}" aria-label="${name} status"><option value="open">Open</option><option value="late">Late start</option><option value="closed">Closed</option></select>
+       <input id="wkt${d}" type="time" value="10:00" aria-label="${name} first tee">`);
+    const rule = DEFAULT_WEEK[d];
+    if (rule) { $("wk" + d).value = rule.mode; $("wkt" + d).value = rule.time; }
+  });
+  const allIds = FIELDS.concat(WEEK.flatMap(([d]) => ["wk" + d, "wkt" + d]));
+  allIds.forEach((id) => { const el = $(id); defaults[id] = el.type === "checkbox" ? el.checked : el.value; });
+
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE) || "null");
+    if (saved) allIds.forEach((id) => { if (id in saved) { const el = $(id); if (el.type === "checkbox") el.checked = saved[id]; else el.value = saved[id]; } });
+  } catch (e) {}
+
+  function save() {
+    try {
+      const o = {};
+      allIds.forEach((id) => { const el = $(id); o[id] = el.type === "checkbox" ? el.checked : el.value; });
+      localStorage.setItem(STORE, JSON.stringify(o));
+    } catch (e) {}
+  }
+
+  const toMin = (s) => { const m = /^(\d{1,2}):(\d{2})/.exec(s || ""); return m ? +m[1] * 60 + +m[2] : 0; };
+  const hhmm = (m) => { m = Math.round(m); const h = Math.floor(m / 60), mm = ((m % 60) + 60) % 60; return String(h).padStart(2, "0") + ":" + String(mm).padStart(2, "0"); };
+  const num = (id, fb) => { const v = parseFloat($(id).value); return isFinite(v) ? v : fb; };
+  const fmtInt = (n) => Math.round(n).toLocaleString("en-GB");
+  const iso = (y, m, d) => `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+
+  function readCfg() {
+    const weekRules = {};
+    WEEK.forEach(([d]) => { weekRules[d] = { mode: $("wk" + d).value, time: toMin($("wkt" + d).value) }; $("wkt" + d).disabled = $("wk" + d).value !== "late"; });
+    return {
+      lat: num("lat", 37.09), lon: num("lon", -8.11), tz: $("tz").value.trim() || "UTC",
+      year: Math.round(num("year", 2027)),
+      interval: Math.max(5, num("interval", 10)), round: Math.max(60, num("round", 270)),
+      nine: Math.max(30, num("nine", 135)), players: Math.max(1, num("players", 4)),
+      earliest: toMin($("earliest").value), srOffset: num("srOffset", 0), buffer: num("buffer", 0),
+      twilight: $("twilight").checked, twoTee: $("twoTee").checked, tee10Until: toMin($("tee10Until").value),
+      weekRules, closures: parseClosures($("closures").value),
+      fee18: num("fee18", 0), fee9: num("fee9", 0),
+    };
+  }
+
+  function parseClosures(text) {
+    const map = new Map();
+    text.split("\n").forEach((line) => {
+      const m = /^\s*(\d{4}-\d{2}-\d{2})(?:\s*\.\.\s*(\d{4}-\d{2}-\d{2}))?\s*(.*)$/.exec(line);
+      if (!m) return;
+      const reason = m[3].trim() || "Closed";
+      let t = Date.parse(m[1] + "T00:00:00Z");
+      const end = Date.parse((m[2] || m[1]) + "T00:00:00Z");
+      for (let n = 0; t <= end && n < 400; t += 86400000, n++) map.set(new Date(t).toISOString().slice(0, 10), reason);
+    });
+    return map;
+  }
+
+  // NOAA-style sunrise/sunset in UTC milliseconds (solar altitude −0.833°)
+  function sun(y, m, d, lat, lon) {
+    const r = Math.PI / 180;
+    const jd = Date.UTC(y, m - 1, d) / 86400000 + 2440587.5;
+    const n = Math.ceil(jd - 2451545 + 0.0008);
+    const js = n - lon / 360;
+    const M = (357.5291 + 0.98560028 * js) % 360;
+    const C = 1.9148 * Math.sin(M * r) + 0.02 * Math.sin(2 * M * r) + 0.0003 * Math.sin(3 * M * r);
+    const L = (M + C + 180 + 102.9372) % 360;
+    const jt = 2451545 + js + 0.0053 * Math.sin(M * r) - 0.0069 * Math.sin(2 * L * r);
+    const dec = Math.asin(Math.sin(L * r) * Math.sin(23.4397 * r));
+    const cosH = (Math.sin(-0.833 * r) - Math.sin(lat * r) * Math.sin(dec)) / (Math.cos(lat * r) * Math.cos(dec));
+    if (cosH > 1 || cosH < -1) return null;
+    const H = Math.acos(cosH) / r;
+    const toMs = (j) => (j - 2440587.5) * 86400000;
+    return { rise: toMs(jt - H / 360), set: toMs(jt + H / 360) };
+  }
+
+  let fmtCache = {};
+  function localMin(ms, tz) {
+    let f = fmtCache[tz];
+    if (!f) {
+      try { f = new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }); }
+      catch (e) { f = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }); }
+      fmtCache[tz] = f;
+    }
+    const p = f.formatToParts(new Date(ms));
+    return +p.find((x) => x.type === "hour").value * 60 + +p.find((x) => x.type === "minute").value;
+  }
+
+  function daySchedule(cfg, y, m, d) {
+    const key = iso(y, m, d);
+    const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+    const out = { key, wd, slots: [], blocked: [], closed: null };
+    const s = sun(y, m, d, cfg.lat, cfg.lon);
+    if (!s) { out.closed = "No sunrise or sunset"; return out; }
+    out.sr = localMin(s.rise, cfg.tz); out.ss = localMin(s.set, cfg.tz);
+    if (cfg.closures.has(key)) { out.closed = cfg.closures.get(key); return out; }
+    const rule = cfg.weekRules[wd];
+    if (rule && rule.mode === "closed") { out.closed = "Weekly maintenance"; return out; }
+
+    const i = cfg.interval, W = cfg.nine;
+    const finish = out.ss + cfg.buffer;
+    const last18 = finish - cfg.round, last9 = finish - W;
+    let first = Math.max(cfg.earliest, out.sr + cfg.srOffset, rule && rule.mode === "late" ? rule.time : 0);
+    first = Math.ceil(first / 5) * 5;
+    Object.assign(out, { first, last18, last9, late: rule && rule.mode === "late" });
+
+    const into1 = [], into10 = [];
+    const hit = (arr, t) => arr.some((a) => Math.abs(a - t) < i);
+    for (let t = first; t <= last9; t += i) {
+      if (hit(into1, t)) out.blocked.push({ t, tee: 1 });
+      else if (t <= last18) { out.slots.push({ t, tee: 1, k: 18 }); into10.push(t + W); }
+      else if (cfg.twilight) out.slots.push({ t, tee: 1, k: 9 });
+
+      if (cfg.twoTee) {
+        const busy = hit(into10, t);
+        if (t <= last18 && t <= cfg.tee10Until) {
+          if (busy) out.blocked.push({ t, tee: 10 });
+          else { out.slots.push({ t, tee: 10, k: 18 }); into1.push(t + W); }
+        } else if (t > last18 && cfg.twilight) {
+          if (busy) out.blocked.push({ t, tee: 10 });
+          else out.slots.push({ t, tee: 10, k: 9 });
+        } else if (busy) out.blocked.push({ t, tee: 10 });
+      }
+    }
+    return out;
+  }
+
+  function computeYear(cfg) {
+    const months = MONTHS.map(() => ({ open: 0, closed: 0, t18: 0, t9: 0, daylight: 0, firstSum: 0, lastSum: 0, nLast: 0 }));
+    let best = null, worst = null;
+    const days = [];
+    for (let m = 1; m <= 12; m++) {
+      const dim = new Date(Date.UTC(cfg.year, m, 0)).getUTCDate();
+      for (let d = 1; d <= dim; d++) {
+        const s = daySchedule(cfg, cfg.year, m, d);
+        const mo = months[m - 1];
+        if (s.sr != null) mo.daylight += s.ss - s.sr;
+        if (s.closed) { mo.closed++; continue; }
+        mo.open++;
+        const n18 = s.slots.filter((x) => x.k === 18).length, n9 = s.slots.length - n18;
+        mo.t18 += n18; mo.t9 += n9;
+        mo.firstSum += s.first;
+        const l18 = s.slots.filter((x) => x.k === 18).reduce((a, x) => Math.max(a, x.t), -1);
+        if (l18 >= 0) { mo.lastSum += l18; mo.nLast++; }
+        const pr = (n18 + n9) * cfg.players;
+        if (!best || pr > best.pr) best = { key: s.key, pr };
+        if (!worst || pr < worst.pr) worst = { key: s.key, pr };
+        days.push(s);
+      }
+    }
+    return { months, best, worst };
+  }
+
+  function prettyDate(key) {
+    return new Date(key + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+  }
+
+  function renderTiles(cfg, Y) {
+    const t = Y.months.reduce((a, m) => ({ open: a.open + m.open, closed: a.closed + m.closed, t18: a.t18 + m.t18, t9: a.t9 + m.t9 }), { open: 0, closed: 0, t18: 0, t9: 0 });
+    const r18 = t.t18 * cfg.players, r9 = t.t9 * cfg.players;
+    const rev = r18 * cfg.fee18 + r9 * cfg.fee9;
+    const tiles = [
+      ["Player rounds", fmtInt(r18 + r9), `${fmtInt(r18)} × 18 · ${fmtInt(r9)} × 9`, true],
+      ["Tee times", fmtInt(t.t18 + t.t9), `${fmtInt(t.t18)} for 18 · ${fmtInt(t.t9)} for 9`],
+      ["Open days", fmtInt(t.open), `${t.closed} closed`],
+      ["Per open day", t.open ? fmtInt((r18 + r9) / t.open) : "0", Y.best ? `Peak ${Y.best.pr} on ${prettyDate(Y.best.key)} · low ${Y.worst.pr} on ${prettyDate(Y.worst.key)}` : ""],
+    ];
+    if (cfg.fee18 || cfg.fee9) tiles.push(["Max green fees", "€" + (rev >= 1e6 ? (rev / 1e6).toFixed(2) + "M" : fmtInt(rev / 1000) + "k"), "at 100% occupancy"]);
+    $("tiles").innerHTML = tiles.map(([k, v, s, lead]) => `<div class="tile${lead ? " lead" : ""}"><span class="k">${k}</span><span class="v">${v}</span><span class="s">${s}</span></div>`).join("");
+  }
+
+  function niceMax(v) {
+    if (v <= 0) return 10;
+    const p = Math.pow(10, Math.floor(Math.log10(v)));
+    for (const s of [1, 2, 2.5, 5, 10]) if (s * p >= v) return s * p;
+    return 10 * p;
+  }
+
+  function renderChart(cfg, Y) {
+    const W = 720, H = 250, L = 52, R = 10, T = 14, B = 28;
+    const vals = Y.months.map((m) => ({ a: m.t18 * cfg.players, b: m.t9 * cfg.players }));
+    const max = niceMax(Math.max(...vals.map((v) => v.a + v.b)));
+    const y = (v) => T + (H - T - B) * (1 - v / max);
+    const bw = (W - L - R) / 12;
+    let g = "";
+    for (let k = 0; k <= 4; k++) {
+      const v = (max / 4) * k;
+      g += `<line class="grid-line" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke-width="1"/>`;
+      g += `<text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${fmtInt(v)}</text>`;
+    }
+    vals.forEach((v, k) => {
+      const x = L + k * bw + bw * 0.18, w = bw * 0.64;
+      g += `<rect class="bar" x="${x}" y="${y(v.a)}" width="${w}" height="${y(0) - y(v.a)}" fill="var(--fairway)"><title>${MONTHS[k]}: ${fmtInt(v.a)} 18-hole rounds</title></rect>`;
+      if (v.b) g += `<rect class="bar" x="${x}" y="${y(v.a + v.b)}" width="${w}" height="${y(v.a) - y(v.a + v.b)}" fill="var(--flag)"><title>${MONTHS[k]}: ${fmtInt(v.b)} 9-hole rounds</title></rect>`;
+      g += `<text x="${x + w / 2}" y="${H - 9}" text-anchor="middle">${MONTHS[k]}</text>`;
+    });
+    $("chart").innerHTML = g;
+  }
+
+  function renderTable(cfg, Y) {
+    let rows = "", tot = { open: 0, t18: 0, t9: 0 };
+    Y.months.forEach((m, k) => {
+      const dim = m.open + m.closed;
+      tot.open += m.open; tot.t18 += m.t18; tot.t9 += m.t9;
+      rows += `<tr><td>${MONTHS[k]}</td><td>${m.open}/${dim}</td><td>${hhmm(m.daylight / dim)}</td><td>${m.open ? hhmm(m.firstSum / m.open) : "–"}</td><td>${m.nLast ? hhmm(m.lastSum / m.nLast) : "–"}</td><td>${fmtInt(m.t18)}</td><td>${fmtInt(m.t9)}</td><td>${fmtInt((m.t18 + m.t9) * cfg.players)}</td></tr>`;
+    });
+    $("months").innerHTML = `<thead><tr><th>Month</th><th>Open days</th><th>Avg daylight</th><th>Avg first tee</th><th>Avg last 18</th><th>18 tee times</th><th>9 tee times</th><th>Player rounds</th></tr></thead>
+      <tbody>${rows}</tbody>
+      <tfoot><tr><td>Year</td><td>${tot.open}</td><td></td><td></td><td></td><td>${fmtInt(tot.t18)}</td><td>${fmtInt(tot.t9)}</td><td>${fmtInt((tot.t18 + tot.t9) * cfg.players)}</td></tr></tfoot>`;
+  }
+
+  function renderDay(cfg) {
+    let key = $("day").value;
+    if (!key || +key.slice(0, 4) !== cfg.year) { key = `${cfg.year}-06-21`; $("day").value = key; }
+    $("day").min = `${cfg.year}-01-01`; $("day").max = `${cfg.year}-12-31`;
+    const [y, m, d] = key.split("-").map(Number);
+    const s = daySchedule(cfg, y, m, d);
+    const wdName = new Date(key + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "long", timeZone: "UTC" });
+    let facts = `<span>${wdName}</span>`;
+    if (s.sr != null) facts += `<span>Sunrise <b>${hhmm(s.sr)}</b></span><span>Sunset <b>${hhmm(s.ss)}</b></span>`;
+    if (s.closed) {
+      $("dayFacts").innerHTML = facts + `<span class="closed-note">Closed: ${s.closed.replace(/</g, "&lt;")}</span>`;
+      $("sheet").innerHTML = `<p style="padding:14px;margin:0;color:var(--muted)">No tee times on this date.</p>`;
+      return;
+    }
+    const n18 = s.slots.filter((x) => x.k === 18).length, n9 = s.slots.length - n18;
+    facts += `<span>First tee <b>${hhmm(s.first)}</b>${s.late ? " (maintenance)" : ""}</span><span>Last 18 <b>${s.last18 >= s.first ? hhmm(Math.min(s.last18, s.slots.filter((x) => x.k === 18).reduce((a, x) => Math.max(a, x.t), s.first))) : "–"}</b></span>`;
+    facts += `<span><b>${n18}</b> × 18 · <b>${n9}</b> × 9 · <b>${(n18 + n9) * cfg.players}</b> players</span>`;
+    $("dayFacts").innerHTML = facts;
+
+    const times = [...new Set(s.slots.map((x) => x.t).concat(s.blocked.map((x) => x.t)))].sort((a, b) => a - b);
+    const cell = (t, tee) => {
+      const sl = s.slots.find((x) => x.t === t && x.tee === tee);
+      if (sl) return `<span class="chip c${sl.k}">${sl.k} holes</span>`;
+      if (s.blocked.some((x) => x.t === t && x.tee === tee)) return `<span class="chip cx">crossover</span>`;
+      return `<span style="color:var(--muted)">·</span>`;
+    };
+    const rows = times.map((t) => `<tr><td>${hhmm(t)}</td><td>${cell(t, 1)}</td>${cfg.twoTee ? `<td>${cell(t, 10)}</td>` : ""}</tr>`).join("");
+    $("sheet").innerHTML = times.length
+      ? `<table><thead><tr><th>Time</th><th>Tee 1</th>${cfg.twoTee ? "<th>Tee 10</th>" : ""}</tr></thead><tbody>${rows}</tbody></table>`
+      : `<p style="padding:14px;margin:0;color:var(--muted)">Not enough daylight for a round with these rules.</p>`;
+  }
+
+  function update() {
+    const cfg = readCfg();
+    const Y = computeYear(cfg);
+    renderTiles(cfg, Y); renderChart(cfg, Y); renderTable(cfg, Y); renderDay(cfg);
+    save();
+  }
+
+  $("form").addEventListener("input", update);
+  $("form").addEventListener("change", update);
+  $("day").addEventListener("change", () => renderDay(readCfg()));
+  $("reset").addEventListener("click", () => {
+    allIds.forEach((id) => { const el = $(id); if (el.type === "checkbox") el.checked = defaults[id]; else el.value = defaults[id]; });
+    update();
+  });
+  update();
+})();
+</script>
