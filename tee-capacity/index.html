@@ -572,6 +572,7 @@ tfoot td { font-weight: 500; border-bottom: 0; }
   let toastTimer;
   function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 3500); }
   let dlPromise = null;
+  const inClaude = !!(window.claude && window.claude.use);
   const getDownloads = () => (dlPromise ||= (window.claude && window.claude.use ? window.claude.use("downloads") : Promise.resolve(null)).catch(() => null));
   const fileBase = (cfg) => `${cfg.name.replace(/[\\/:*?"<>|]+/g, " ").trim() || "Course"} capacity ${cfg.year}`;
 
@@ -589,7 +590,16 @@ tfoot td { font-weight: 500; border-bottom: 0; }
 
   async function offer(filename, data) {
     const dl = await getDownloads();
-    if (!dl) { toast("Export works when this page is opened in Claude."); return; }
+    if (!dl) {
+      if (inClaude) { toast("Export works when this page is opened in Claude."); return; }
+      // Standalone hosting (e.g. Vercel): a normal browser download
+      const url = URL.createObjectURL(data instanceof Blob ? data : new Blob([data]));
+      const a = document.createElement("a"); a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      toast(`Downloaded ${filename}`);
+      return;
+    }
     try { await dl.save({ filename, data }); toast(`Saved ${filename}`); }
     catch (e) {
       const c = e && e.code;
@@ -714,7 +724,7 @@ tfoot td { font-weight: 500; border-bottom: 0; }
   }
   guard($("xlsxBtn"), exportXlsx);
   guard($("pdfBtn"), exportPdf);
-  getDownloads().then((dl) => { if (!dl) ["xlsxBtn", "pdfBtn"].forEach((id) => { $(id).disabled = true; $(id).title = "Export works when this page is opened in Claude"; }); });
+  getDownloads().then((dl) => { if (!dl && inClaude) ["xlsxBtn", "pdfBtn"].forEach((id) => { $(id).disabled = true; $(id).title = "Export works when this page is opened in Claude"; }); });
 
   $("form").addEventListener("input", update);
   $("form").addEventListener("change", update);
