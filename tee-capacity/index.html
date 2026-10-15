@@ -1,0 +1,738 @@
+<title>Tee Sheet Capacity</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a deep-green course band (name, location, headline figures, export) over a two-column workspace — tabbed settings on the left, tabbed results on the right; one column under 960px */
+:root {
+  --bg: #f4f6f3;
+  --panel: #ffffff;
+  --sunk: #eef2ed;
+  --ink: #101a14;
+  --muted: #59665e;
+  --line: #dce3db;
+  --green: #0f5a3a;
+  --on-green: #ffffff;
+  --amber: #b97d06;
+  --day: #f3e3a6;
+  --closed: #c4ccc5;
+  --warn: #a2481f;
+  --hero-bg: #0f3b29;
+  --hero-ink: #f1f6f2;
+  --hero-muted: #a9c3b3;
+  --hero-line: #2b5a44;
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Public Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c1310; --panel: #131c17; --sunk: #0f1813; --ink: #e6eee8; --muted: #92a299; --line: #24322a;
+    --green: #4fc08b; --on-green: #05140c; --amber: #e5b03c; --day: #3b3520; --closed: #34423a; --warn: #ec8d60;
+    --hero-bg: #10261b; --hero-ink: #eef5f0; --hero-muted: #93b3a0; --hero-line: #24402f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c1310; --panel: #131c17; --sunk: #0f1813; --ink: #e6eee8; --muted: #92a299; --line: #24322a;
+  --green: #4fc08b; --on-green: #05140c; --amber: #e5b03c; --day: #3b3520; --closed: #34423a; --warn: #ec8d60;
+  --hero-bg: #10261b; --hero-ink: #eef5f0; --hero-muted: #93b3a0; --hero-line: #24402f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 14px; line-height: 1.5; }
+.gutter { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+.inner { max-width: 1320px; margin: 0 auto; }
+
+/* Course band */
+.band { background: var(--hero-bg); color: var(--hero-ink); padding-block: 28px 22px; }
+.band .inner { display: flex; flex-direction: column; gap: 22px; }
+.band-top { display: flex; flex-wrap: wrap; gap: 16px 24px; justify-content: space-between; align-items: flex-end; }
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--hero-muted); }
+.band h1 { font-family: var(--display); font-weight: 800; font-size: clamp(28px, 5vw, 48px); line-height: 1.05; margin: 6px 0 6px; letter-spacing: -0.015em; text-wrap: balance; overflow-wrap: anywhere; }
+.where { font-family: var(--mono); font-size: 12px; color: var(--hero-muted); }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; }
+.btn { font: 500 13px var(--body); display: inline-flex; align-items: center; gap: 8px; border-radius: 8px; padding: 9px 14px; cursor: pointer; border: 1px solid var(--hero-line); background: transparent; color: var(--hero-ink); }
+.btn:hover { background: var(--hero-line); }
+.btn.primary { background: var(--hero-ink); color: var(--hero-bg); border-color: var(--hero-ink); }
+.btn.primary:hover { opacity: 0.9; }
+.btn[disabled] { opacity: 0.45; cursor: not-allowed; }
+.btn svg { width: 16px; height: 16px; flex: none; }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0; border-top: 1px solid var(--hero-line); }
+.kpi { padding: 14px 18px 0 0; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.kpi .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--hero-muted); }
+.kpi .v { font-family: var(--display); font-weight: 700; font-size: 30px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.kpi .s { font-size: 12px; color: var(--hero-muted); }
+
+/* Workspace */
+.work { padding-block: 24px 56px; }
+.work .inner { display: grid; grid-template-columns: 370px minmax(0, 1fr); gap: 20px; align-items: start; }
+@media (max-width: 960px) { .work .inner { grid-template-columns: minmax(0, 1fr); } }
+.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 12px; min-width: 0; }
+.panel-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 14px 16px 0; flex-wrap: wrap; }
+.panel-head h2 { font-family: var(--display); font-weight: 700; font-size: 16px; margin: 0; }
+.tabs { display: flex; gap: 2px; padding: 3px; background: var(--sunk); border-radius: 8px; overflow-x: auto; max-width: 100%; }
+.tab { font: 500 13px var(--body); color: var(--muted); background: none; border: 0; padding: 6px 11px; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+.tab[aria-selected="true"] { background: var(--panel); color: var(--ink); box-shadow: 0 1px 2px rgba(0,0,0,0.08); }
+.tab:focus-visible, .btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.settings .tabs { margin: 12px 16px 0; }
+.pane { padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field > span { font-size: 12px; font-weight: 600; color: var(--ink); }
+.field > small, .hint { font-size: 12px; color: var(--muted); line-height: 1.4; }
+.pair { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+input, select, textarea { font: inherit; color: var(--ink); background: var(--sunk); border: 1px solid var(--line); border-radius: 7px; padding: 8px 10px; width: 100%; min-width: 0; }
+input[type="number"], input[type="time"], input[type="date"] { font-family: var(--mono); font-size: 13px; }
+input#courseName { font-family: var(--display); font-weight: 700; font-size: 18px; background: var(--panel); }
+textarea { font-family: var(--mono); font-size: 12px; min-height: 100px; resize: vertical; }
+.toggle { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.toggle input { width: 18px; height: 18px; margin: 1px 0 0; accent-color: var(--green); flex: none; }
+.toggle b { display: block; font-weight: 600; font-size: 13px; }
+.toggle small { color: var(--muted); font-size: 12px; }
+.week { display: grid; grid-template-columns: 44px minmax(0, 1fr) 96px; gap: 6px 8px; align-items: center; }
+.week span { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.week input:disabled { opacity: 0.35; }
+.link { font: 500 12px var(--body); color: var(--muted); background: none; border: 0; padding: 0 16px 16px; cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-align: left; }
+.link:hover { color: var(--ink); }
+
+.results .pane { gap: 18px; }
+.chart-title { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.chart-title h3 { font-family: var(--display); font-weight: 700; font-size: 15px; margin: 0; }
+.legend { display: flex; gap: 14px; font-size: 12px; color: var(--muted); flex-wrap: wrap; }
+.legend i { display: inline-block; width: 12px; height: 4px; border-radius: 2px; margin-right: 6px; vertical-align: 3px; }
+.legend i.sq { height: 10px; width: 10px; vertical-align: -1px; }
+.scroll { overflow-x: auto; }
+svg text { fill: var(--muted); font-family: var(--mono); font-size: 11px; }
+svg .gl { stroke: var(--line); }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
+th, td { text-align: right; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+th { font-family: var(--mono); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+td { font-family: var(--mono); font-size: 13px; }
+tbody tr:hover td { background: var(--sunk); }
+tfoot td { font-weight: 500; border-bottom: 0; }
+.day-top { display: flex; flex-wrap: wrap; gap: 12px 24px; align-items: flex-end; }
+.day-top .field { width: 180px; }
+.facts { display: flex; flex-wrap: wrap; gap: 4px 18px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+.facts b { color: var(--ink); font-weight: 500; }
+.sheet { max-height: 480px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+.sheet th { position: sticky; top: 0; background: var(--panel); z-index: 1; }
+.sheet td, .sheet th { text-align: left; }
+.chip { display: inline-block; font-family: var(--mono); font-size: 11px; padding: 1px 9px; border-radius: 999px; border: 1px solid transparent; }
+.chip.c18 { background: var(--green); color: var(--on-green); }
+.chip.c9 { background: var(--amber); color: #1c1405; }
+.chip.cx { border-color: var(--closed); color: var(--muted); }
+.closed-note { color: var(--warn); font-weight: 500; }
+.method { color: var(--muted); font-size: 13px; max-width: 78ch; display: flex; flex-direction: column; gap: 8px; }
+.method p { margin: 0; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(20px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 8px; font-size: 13px; max-width: calc(100% - 32px); z-index: 10; }
+</style>
+
+<header class="band gutter">
+  <div class="inner">
+    <div class="band-top">
+      <div>
+        <div class="eyebrow" id="eyebrow">Tee sheet capacity · 2027</div>
+        <h1 id="nameOut">Vilamoura Example Course</h1>
+        <div class="where" id="whereOut"></div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" id="xlsxBtn" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="1.5"/><path d="M2 6h12M2 10h12M6 6v8"/></svg>Export Excel</button>
+        <button class="btn" id="pdfBtn" type="button"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 1.5h5.5L13 5v9.5H4z"/><path d="M9.5 1.5V5H13M6 9h5M6 11.5h5"/></svg>Export PDF</button>
+      </div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+  </div>
+</header>
+
+<div class="work gutter">
+  <div class="inner">
+    <section class="panel settings" id="form" aria-label="Course rules">
+      <div class="panel-head"><h2>Course rules</h2></div>
+      <div class="tabs" role="tablist" data-group="set">
+        <button class="tab" role="tab" aria-selected="true" data-pane="p-course" type="button">Course</button>
+        <button class="tab" role="tab" aria-selected="false" data-pane="p-play" type="button">Play</button>
+        <button class="tab" role="tab" aria-selected="false" data-pane="p-light" type="button">Daylight</button>
+        <button class="tab" role="tab" aria-selected="false" data-pane="p-closed" type="button">Closures</button>
+        <button class="tab" role="tab" aria-selected="false" data-pane="p-fees" type="button">Fees</button>
+      </div>
+
+      <div class="pane" id="p-course" role="tabpanel">
+        <label class="field"><span>Course name</span><input id="courseName" type="text" value="Vilamoura Example Course" maxlength="80"></label>
+        <div class="pair">
+          <label class="field"><span>Latitude</span><input id="lat" type="number" step="0.01" value="37.09"></label>
+          <label class="field"><span>Longitude</span><input id="lon" type="number" step="0.01" value="-8.11"></label>
+        </div>
+        <small class="hint">Longitude is negative west of Greenwich.</small>
+        <div class="pair">
+          <label class="field"><span>Time zone</span><input id="tz" type="text" value="Europe/Lisbon"></label>
+          <label class="field"><span>Year</span><input id="year" type="number" value="2027"></label>
+        </div>
+      </div>
+
+      <div class="pane" id="p-play" role="tabpanel" hidden>
+        <div class="pair">
+          <label class="field"><span>Tee interval</span><input id="interval" type="number" min="5" step="1" value="10"><small>minutes</small></label>
+          <label class="field"><span>Players per group</span><input id="players" type="number" min="1" max="5" value="4"></label>
+        </div>
+        <div class="pair">
+          <label class="field"><span>18-hole round</span><input id="round" type="number" min="60" step="5" value="270"><small>par time, minutes</small></label>
+          <label class="field"><span>Front 9</span><input id="nine" type="number" min="30" step="5" value="135"><small>tee 1 to tee 10, minutes</small></label>
+        </div>
+        <label class="toggle"><input id="twoTee" type="checkbox" checked><span><b>Two-tee starts</b><small>Also start groups from tee 10, with crossover blocks at both tees</small></span></label>
+        <label class="field"><span>Tee 10 starts until</span><input id="tee10Until" type="time" value="11:00"></label>
+      </div>
+
+      <div class="pane" id="p-light" role="tabpanel" hidden>
+        <div class="pair">
+          <label class="field"><span>First tee not before</span><input id="earliest" type="time" value="07:30"></label>
+          <label class="field"><span>After sunrise</span><input id="srOffset" type="number" step="5" value="10"><small>minutes</small></label>
+        </div>
+        <label class="field"><span>Finish relative to sunset</span><input id="buffer" type="number" step="5" value="0"><small>minutes; +20 is roughly civil twilight</small></label>
+        <label class="toggle"><input id="twilight" type="checkbox" checked><span><b>Twilight 9-hole tee times</b><small>Sell 9 holes once an 18 can no longer finish before dark</small></span></label>
+      </div>
+
+      <div class="pane" id="p-closed" role="tabpanel" hidden>
+        <div class="field"><span>Weekly maintenance</span></div>
+        <div class="week" id="week"></div>
+        <label class="field"><span>Closed dates</span><textarea id="closures" spellcheck="false">2027-03-08..2027-03-10 Hollow tining
+2027-09-13..2027-09-15 Overseeding
+2027-12-25 Christmas</textarea><small>One per line: a date or a range (YYYY-MM-DD..YYYY-MM-DD), then an optional reason.</small></label>
+      </div>
+
+      <div class="pane" id="p-fees" role="tabpanel" hidden>
+        <div class="pair">
+          <label class="field"><span>Average 18-hole fee</span><input id="fee18" type="number" min="0" step="1" value="95"><small>EUR per player</small></label>
+          <label class="field"><span>Average 9-hole fee</span><input id="fee9" type="number" min="0" step="1" value="55"><small>EUR per player</small></label>
+        </div>
+        <label class="field"><span>Expected occupancy</span><input id="occ" type="number" min="0" max="100" step="1" value="70"><small>percent of slots sold, for the forecast column</small></label>
+      </div>
+
+      <button class="link" id="reset" type="button">Restore example values</button>
+    </section>
+
+    <section class="panel results" aria-label="Capacity results">
+      <div class="panel-head">
+        <h2>Capacity</h2>
+        <div class="tabs" role="tablist" data-group="res">
+          <button class="tab" role="tab" aria-selected="true" data-pane="r-year" type="button">Year</button>
+          <button class="tab" role="tab" aria-selected="false" data-pane="r-months" type="button">Months</button>
+          <button class="tab" role="tab" aria-selected="false" data-pane="r-day" type="button">Day sheet</button>
+          <button class="tab" role="tab" aria-selected="false" data-pane="r-method" type="button">Method</button>
+        </div>
+      </div>
+
+      <div class="pane" id="r-year" role="tabpanel">
+        <div class="chart-title">
+          <h3>Daylight and the tee sheet</h3>
+          <div class="legend"><span><i class="sq" style="background:var(--day)"></i>Daylight</span><span><i style="background:var(--green)"></i>First tee and last 18</span><span><i style="background:var(--amber)"></i>Last 9</span><span><i class="sq" style="background:var(--closed)"></i>Closed</span></div>
+        </div>
+        <p class="hint" style="margin:-8px 0 0">Lines show regular days; late-start maintenance days are left out.</p>
+        <div class="scroll"><svg id="band" viewBox="0 0 760 260" width="100%" role="img" aria-label="Sunrise, sunset, first tee and last tee times across the year"></svg></div>
+        <div class="chart-title">
+          <h3>Player rounds by month</h3>
+          <div class="legend"><span><i class="sq" style="background:var(--green)"></i>18 holes</span><span><i class="sq" style="background:var(--amber)"></i>9 holes</span></div>
+        </div>
+        <div class="scroll"><svg id="bars" viewBox="0 0 760 230" width="100%" role="img" aria-label="Monthly player rounds"></svg></div>
+      </div>
+
+      <div class="pane" id="r-months" role="tabpanel" hidden>
+        <div class="scroll"><table id="months"></table></div>
+      </div>
+
+      <div class="pane" id="r-day" role="tabpanel" hidden>
+        <div class="day-top">
+          <label class="field"><span>Date</span><input id="day" type="date"></label>
+          <div class="facts" id="dayFacts"></div>
+        </div>
+        <div class="sheet" id="sheet"></div>
+      </div>
+
+      <div class="pane method" id="r-method" role="tabpanel" hidden>
+        <p>Sunrise and sunset come from the NOAA solar position formula for the course coordinates, in local time with daylight saving.</p>
+        <p>The first tee is the latest of the fixed earliest time, sunrise plus the offset, and any late-start maintenance that weekday, rounded up to 5 minutes. The last 18 is the latest start that still finishes the full round by sunset plus the buffer.</p>
+        <p>With two-tee starts, every group off tee 1 reaches tee 10 one front-9 time later, and every 18-hole group off tee 10 comes back to tee 1 the same way. Those crossover slots are blocked. Two tees help most on short winter days; on long days they move capacity earlier without adding much.</p>
+        <p>Capacity figures are the theoretical maximum: every slot sold with a full group. The forecast applies the expected occupancy from the Fees tab.</p>
+      </div>
+    </section>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+<script>
+(function () {
+  const $ = (id) => document.getElementById(id);
+  const WEEK = [[1, "Mon"], [2, "Tue"], [3, "Wed"], [4, "Thu"], [5, "Fri"], [6, "Sat"], [0, "Sun"]];
+  const WD = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const DEFAULT_WEEK = { 1: { mode: "late", time: "10:00" } };
+  const FIELDS = ["courseName", "lat", "lon", "tz", "year", "interval", "round", "nine", "players", "earliest", "srOffset", "buffer", "twilight", "twoTee", "tee10Until", "closures", "fee18", "fee9", "occ"];
+  const STORE = "tee-capacity-v2";
+  const defaults = {};
+
+  // Tabs
+  document.querySelectorAll(".tabs").forEach((list) => {
+    list.addEventListener("click", (e) => {
+      const btn = e.target.closest(".tab"); if (!btn) return;
+      list.querySelectorAll(".tab").forEach((t) => { const on = t === btn; t.setAttribute("aria-selected", on); $(t.dataset.pane).hidden = !on; });
+    });
+  });
+
+  // Weekly rows
+  WEEK.forEach(([d, name]) => {
+    $("week").insertAdjacentHTML("beforeend",
+      `<span>${name}</span>
+       <select id="wk${d}" aria-label="${name} status"><option value="open">Open</option><option value="late">Late start</option><option value="closed">Closed</option></select>
+       <input id="wkt${d}" type="time" value="10:00" aria-label="${name} first tee">`);
+    const rule = DEFAULT_WEEK[d];
+    if (rule) { $("wk" + d).value = rule.mode; $("wkt" + d).value = rule.time; }
+  });
+  const allIds = FIELDS.concat(WEEK.flatMap(([d]) => ["wk" + d, "wkt" + d]));
+  allIds.forEach((id) => { const el = $(id); defaults[id] = el.type === "checkbox" ? el.checked : el.value; });
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE) || "null");
+    if (saved) allIds.forEach((id) => { if (id in saved) { const el = $(id); if (el.type === "checkbox") el.checked = saved[id]; else el.value = saved[id]; } });
+  } catch (e) {}
+  function save() {
+    try { const o = {}; allIds.forEach((id) => { const el = $(id); o[id] = el.type === "checkbox" ? el.checked : el.value; }); localStorage.setItem(STORE, JSON.stringify(o)); } catch (e) {}
+  }
+
+  const toMin = (s) => { const m = /^(\d{1,2}):(\d{2})/.exec(s || ""); return m ? +m[1] * 60 + +m[2] : 0; };
+  const hhmm = (m) => { if (m == null || !isFinite(m)) return ""; m = Math.round(m); const h = Math.floor(m / 60), mm = ((m % 60) + 60) % 60; return String(h).padStart(2, "0") + ":" + String(mm).padStart(2, "0"); };
+  const num = (id, fb) => { const v = parseFloat($(id).value); return isFinite(v) ? v : fb; };
+  const fmtInt = (n) => Math.round(n).toLocaleString("en-GB");
+  const money = (n) => "€" + (n >= 1e6 ? (n / 1e6).toFixed(2) + "M" : fmtInt(n / 1000) + "k");
+  const iso = (y, m, d) => `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+  function readCfg() {
+    const weekRules = {};
+    WEEK.forEach(([d]) => { weekRules[d] = { mode: $("wk" + d).value, time: toMin($("wkt" + d).value) }; $("wkt" + d).disabled = $("wk" + d).value !== "late"; });
+    return {
+      name: $("courseName").value.trim() || "Untitled course",
+      lat: num("lat", 37.09), lon: num("lon", -8.11), tz: $("tz").value.trim() || "UTC",
+      year: Math.round(num("year", 2027)),
+      interval: Math.max(5, num("interval", 10)), round: Math.max(60, num("round", 270)),
+      nine: Math.max(30, num("nine", 135)), players: Math.max(1, num("players", 4)),
+      earliest: toMin($("earliest").value), srOffset: num("srOffset", 0), buffer: num("buffer", 0),
+      twilight: $("twilight").checked, twoTee: $("twoTee").checked, tee10Until: toMin($("tee10Until").value),
+      weekRules, closuresText: $("closures").value, closures: parseClosures($("closures").value),
+      fee18: Math.max(0, num("fee18", 0)), fee9: Math.max(0, num("fee9", 0)),
+      occ: Math.min(100, Math.max(0, num("occ", 100))) / 100,
+    };
+  }
+
+  function parseClosures(text) {
+    const map = new Map();
+    text.split("\n").forEach((line) => {
+      const m = /^\s*(\d{4}-\d{2}-\d{2})(?:\s*\.\.\s*(\d{4}-\d{2}-\d{2}))?\s*(.*)$/.exec(line);
+      if (!m) return;
+      const reason = m[3].trim() || "Closed";
+      let t = Date.parse(m[1] + "T00:00:00Z");
+      const end = Date.parse((m[2] || m[1]) + "T00:00:00Z");
+      for (let n = 0; t <= end && n < 400; t += 86400000, n++) map.set(new Date(t).toISOString().slice(0, 10), reason);
+    });
+    return map;
+  }
+
+  // NOAA-style sunrise/sunset in UTC milliseconds (solar altitude −0.833°)
+  function sun(y, m, d, lat, lon) {
+    const r = Math.PI / 180;
+    const jd = Date.UTC(y, m - 1, d) / 86400000 + 2440587.5;
+    const n = Math.ceil(jd - 2451545 + 0.0008);
+    const js = n - lon / 360;
+    const M = (357.5291 + 0.98560028 * js) % 360;
+    const C = 1.9148 * Math.sin(M * r) + 0.02 * Math.sin(2 * M * r) + 0.0003 * Math.sin(3 * M * r);
+    const L = (M + C + 180 + 102.9372) % 360;
+    const jt = 2451545 + js + 0.0053 * Math.sin(M * r) - 0.0069 * Math.sin(2 * L * r);
+    const dec = Math.asin(Math.sin(L * r) * Math.sin(23.4397 * r));
+    const cosH = (Math.sin(-0.833 * r) - Math.sin(lat * r) * Math.sin(dec)) / (Math.cos(lat * r) * Math.cos(dec));
+    if (cosH > 1 || cosH < -1) return null;
+    const H = Math.acos(cosH) / r;
+    const toMs = (j) => (j - 2440587.5) * 86400000;
+    return { rise: toMs(jt - H / 360), set: toMs(jt + H / 360) };
+  }
+
+  const fmtCache = {};
+  function localMin(ms, tz) {
+    let f = fmtCache[tz];
+    if (!f) {
+      try { f = new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit", hourCycle: "h23" }); }
+      catch (e) { f = new Intl.DateTimeFormat("en-GB", { timeZone: "UTC", hour: "2-digit", minute: "2-digit", hourCycle: "h23" }); }
+      fmtCache[tz] = f;
+    }
+    const p = f.formatToParts(new Date(ms));
+    return +p.find((x) => x.type === "hour").value * 60 + +p.find((x) => x.type === "minute").value;
+  }
+
+  function daySchedule(cfg, y, m, d) {
+    const key = iso(y, m, d);
+    const wd = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
+    const out = { key, m, wd, slots: [], blocked: [], closed: null, n18: 0, n9: 0 };
+    const s = sun(y, m, d, cfg.lat, cfg.lon);
+    if (!s) { out.closed = "No sunrise or sunset"; return out; }
+    out.sr = localMin(s.rise, cfg.tz); out.ss = localMin(s.set, cfg.tz);
+    if (cfg.closures.has(key)) { out.closed = cfg.closures.get(key); return out; }
+    const rule = cfg.weekRules[wd];
+    if (rule && rule.mode === "closed") { out.closed = "Weekly maintenance"; return out; }
+
+    const i = cfg.interval, W = cfg.nine;
+    const finish = out.ss + cfg.buffer;
+    const last18 = finish - cfg.round, last9 = finish - W;
+    let first = Math.max(cfg.earliest, out.sr + cfg.srOffset, rule && rule.mode === "late" ? rule.time : 0);
+    first = Math.ceil(first / 5) * 5;
+    Object.assign(out, { first, late: !!(rule && rule.mode === "late") });
+
+    const into1 = [], into10 = [];
+    const hit = (arr, t) => arr.some((a) => Math.abs(a - t) < i);
+    for (let t = first; t <= last9; t += i) {
+      if (hit(into1, t)) out.blocked.push({ t, tee: 1 });
+      else if (t <= last18) { out.slots.push({ t, tee: 1, k: 18 }); into10.push(t + W); }
+      else if (cfg.twilight) out.slots.push({ t, tee: 1, k: 9 });
+      if (cfg.twoTee) {
+        const busy = hit(into10, t);
+        if (t <= last18 && t <= cfg.tee10Until) {
+          if (busy) out.blocked.push({ t, tee: 10 });
+          else { out.slots.push({ t, tee: 10, k: 18 }); into1.push(t + W); }
+        } else if (t > last18 && cfg.twilight) {
+          if (busy) out.blocked.push({ t, tee: 10 });
+          else out.slots.push({ t, tee: 10, k: 9 });
+        } else if (busy) out.blocked.push({ t, tee: 10 });
+      }
+    }
+    out.slots.forEach((x) => { if (x.k === 18) { out.n18++; out.last18 = Math.max(out.last18 ?? -1, x.t); } else { out.n9++; out.last9 = Math.max(out.last9 ?? -1, x.t); } });
+    return out;
+  }
+
+  function computeYear(cfg) {
+    const months = MONTHS.map(() => ({ open: 0, closed: 0, t18: 0, t9: 0, daylight: 0, days: 0, firstSum: 0, lastSum: 0, nLast: 0 }));
+    const days = [];
+    let best = null, worst = null;
+    for (let m = 1; m <= 12; m++) {
+      const dim = new Date(Date.UTC(cfg.year, m, 0)).getUTCDate();
+      for (let d = 1; d <= dim; d++) {
+        const s = daySchedule(cfg, cfg.year, m, d);
+        days.push(s);
+        const mo = months[m - 1];
+        mo.days++;
+        if (s.sr != null) mo.daylight += s.ss - s.sr;
+        if (s.closed) { mo.closed++; continue; }
+        mo.open++; mo.t18 += s.n18; mo.t9 += s.n9; mo.firstSum += s.first;
+        if (s.last18 != null) { mo.lastSum += s.last18; mo.nLast++; }
+        const pr = (s.n18 + s.n9) * cfg.players;
+        if (!best || pr > best.pr) best = { key: s.key, pr };
+        if (!worst || pr < worst.pr) worst = { key: s.key, pr };
+      }
+    }
+    const tot = months.reduce((a, m) => ({ open: a.open + m.open, closed: a.closed + m.closed, t18: a.t18 + m.t18, t9: a.t9 + m.t9 }), { open: 0, closed: 0, t18: 0, t9: 0 });
+    tot.r18 = tot.t18 * cfg.players; tot.r9 = tot.t9 * cfg.players;
+    tot.rev = tot.r18 * cfg.fee18 + tot.r9 * cfg.fee9;
+    return { months, days, best, worst, tot };
+  }
+
+  const prettyDate = (key) => new Date(key + "T12:00:00Z").toLocaleDateString("en-GB", { day: "numeric", month: "short", timeZone: "UTC" });
+
+  function renderHeader(cfg, Y) {
+    $("nameOut").textContent = cfg.name;
+    $("eyebrow").textContent = `Tee sheet capacity · ${cfg.year}`;
+    const ns = cfg.lat >= 0 ? "N" : "S", ew = cfg.lon >= 0 ? "E" : "W";
+    $("whereOut").textContent = `${Math.abs(cfg.lat).toFixed(2)}°${ns} ${Math.abs(cfg.lon).toFixed(2)}°${ew} · ${cfg.tz} · ${cfg.interval}-min interval · ${hhmm(cfg.round)} rounds`;
+    const t = Y.tot;
+    const k = [
+      ["Player rounds", fmtInt(t.r18 + t.r9), `${fmtInt(t.r18)} × 18 · ${fmtInt(t.r9)} × 9`],
+      ["Tee times", fmtInt(t.t18 + t.t9), `${fmtInt(t.t18)} for 18 · ${fmtInt(t.t9)} for 9`],
+      ["Open days", fmtInt(t.open), `${t.closed} closed`],
+      ["Per open day", t.open ? fmtInt((t.r18 + t.r9) / t.open) : "0", Y.best ? `Peak ${Y.best.pr} · low ${Y.worst.pr} players` : ""],
+    ];
+    if (cfg.fee18 || cfg.fee9) k.push(["Green fee ceiling", money(t.rev), `${money(t.rev * cfg.occ)} at ${Math.round(cfg.occ * 100)}% occupancy`]);
+    $("kpis").innerHTML = k.map(([a, b, c]) => `<div class="kpi"><span class="k">${a}</span><span class="v">${b}</span><span class="s">${c}</span></div>`).join("");
+  }
+
+  function renderBand(cfg, Y) {
+    const W = 760, H = 260, L = 46, R = 10, T = 10, B = 26;
+    const lo = 5 * 60, hi = 22 * 60;
+    const n = Y.days.length;
+    const x = (i) => L + (W - L - R) * (i / (n - 1));
+    const y = (m) => T + (H - T - B) * ((m - lo) / (hi - lo));
+    let g = "";
+    for (let h = 6; h <= 22; h += 2) g += `<line class="gl" x1="${L}" x2="${W - R}" y1="${y(h * 60)}" y2="${y(h * 60)}"/><text x="${L - 8}" y="${y(h * 60) + 4}" text-anchor="end">${String(h).padStart(2, "0")}:00</text>`;
+    const pts = (fn) => Y.days.map((d, i) => [i, fn(d)]).filter((p) => p[1] != null);
+    const rise = pts((d) => d.sr), set = pts((d) => d.ss);
+    if (rise.length) g += `<path d="M${rise.map(([i, v]) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("L")}L${set.slice().reverse().map(([i, v]) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("L")}Z" fill="var(--day)"/>`;
+    const line = (fn, color, w) => {
+      let path = "", pen = false;
+      Y.days.forEach((d, i) => {
+        if (d.late) return; // late-start maintenance days are skipped so the line shows the usual day
+        const v = d.closed ? null : fn(d);
+        if (v == null) { pen = false; return; }
+        path += `${pen ? "L" : "M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`; pen = true;
+      });
+      return path ? `<path d="${path}" fill="none" stroke="${color}" stroke-width="${w}" stroke-linejoin="round"/>` : "";
+    };
+    g += line((d) => d.first, "var(--green)", 1.6);
+    g += line((d) => d.last18, "var(--green)", 1.6);
+    g += line((d) => d.last9, "var(--amber)", 1.4);
+    Y.days.forEach((d, i) => { if (d.closed) g += `<rect x="${(x(i) - 0.8).toFixed(1)}" y="${T}" width="1.6" height="${H - T - B}" fill="var(--closed)"><title>${d.key}: ${esc(d.closed)}</title></rect>`; });
+    let idx = 0;
+    MONTHS.forEach((mName, k) => {
+      const dim = new Date(Date.UTC(cfg.year, k + 1, 0)).getUTCDate();
+      g += `<text x="${x(idx + dim / 2).toFixed(1)}" y="${H - 8}" text-anchor="middle">${mName}</text>`;
+      if (k) g += `<line class="gl" x1="${x(idx).toFixed(1)}" x2="${x(idx).toFixed(1)}" y1="${H - B}" y2="${H - B + 5}"/>`;
+      idx += dim;
+    });
+    $("band").innerHTML = g;
+  }
+
+  function niceMax(v) {
+    if (v <= 0) return 10;
+    const p = Math.pow(10, Math.floor(Math.log10(v)));
+    for (const s of [1, 2, 2.5, 5, 10]) if (s * p >= v) return s * p;
+    return 10 * p;
+  }
+
+  function renderBars(cfg, Y) {
+    const W = 760, H = 230, L = 52, R = 10, T = 12, B = 26;
+    const vals = Y.months.map((m) => ({ a: m.t18 * cfg.players, b: m.t9 * cfg.players }));
+    const max = niceMax(Math.max(...vals.map((v) => v.a + v.b)));
+    const y = (v) => T + (H - T - B) * (1 - v / max);
+    const bw = (W - L - R) / 12;
+    let g = "";
+    for (let k = 0; k <= 4; k++) { const v = (max / 4) * k; g += `<line class="gl" x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}"/><text x="${L - 8}" y="${y(v) + 4}" text-anchor="end">${fmtInt(v)}</text>`; }
+    vals.forEach((v, k) => {
+      const x = L + k * bw + bw * 0.2, w = bw * 0.6;
+      g += `<rect x="${x}" y="${y(v.a)}" width="${w}" height="${y(0) - y(v.a)}" fill="var(--green)" rx="2"><title>${MONTHS[k]}: ${fmtInt(v.a)} 18-hole rounds</title></rect>`;
+      if (v.b) g += `<rect x="${x}" y="${y(v.a + v.b)}" width="${w}" height="${y(v.a) - y(v.a + v.b)}" fill="var(--amber)"><title>${MONTHS[k]}: ${fmtInt(v.b)} 9-hole rounds</title></rect>`;
+      g += `<text x="${x + w / 2}" y="${H - 8}" text-anchor="middle">${MONTHS[k]}</text>`;
+    });
+    $("bars").innerHTML = g;
+  }
+
+  function monthRows(cfg, Y) {
+    return Y.months.map((m, k) => ({
+      month: MONTHS[k], open: m.open, days: m.days, daylight: hhmm(m.daylight / m.days),
+      first: m.open ? hhmm(m.firstSum / m.open) : "", last: m.nLast ? hhmm(m.lastSum / m.nLast) : "",
+      t18: m.t18, t9: m.t9, rounds: (m.t18 + m.t9) * cfg.players,
+      fc: Math.round((m.t18 + m.t9) * cfg.players * cfg.occ),
+      rev: (m.t18 * cfg.fee18 + m.t9 * cfg.fee9) * cfg.players,
+    }));
+  }
+
+  function renderTable(cfg, Y) {
+    const rows = monthRows(cfg, Y);
+    const t = Y.tot;
+    $("months").innerHTML = `<thead><tr><th>Month</th><th>Open days</th><th>Avg daylight</th><th>Avg first tee</th><th>Avg last 18</th><th>18 tee times</th><th>9 tee times</th><th>Max rounds</th><th>Forecast</th></tr></thead>
+      <tbody>${rows.map((r) => `<tr><td>${r.month}</td><td>${r.open}/${r.days}</td><td>${r.daylight}</td><td>${r.first || "–"}</td><td>${r.last || "–"}</td><td>${fmtInt(r.t18)}</td><td>${fmtInt(r.t9)}</td><td>${fmtInt(r.rounds)}</td><td>${fmtInt(r.fc)}</td></tr>`).join("")}</tbody>
+      <tfoot><tr><td>Year</td><td>${t.open}</td><td></td><td></td><td></td><td>${fmtInt(t.t18)}</td><td>${fmtInt(t.t9)}</td><td>${fmtInt(t.r18 + t.r9)}</td><td>${fmtInt((t.r18 + t.r9) * cfg.occ)}</td></tr></tfoot>`;
+  }
+
+  function renderDay(cfg) {
+    let key = $("day").value;
+    if (!key || +key.slice(0, 4) !== cfg.year) { key = `${cfg.year}-06-21`; $("day").value = key; }
+    $("day").min = `${cfg.year}-01-01`; $("day").max = `${cfg.year}-12-31`;
+    const [y, m, d] = key.split("-").map(Number);
+    const s = daySchedule(cfg, y, m, d);
+    const wdName = new Date(key + "T12:00:00Z").toLocaleDateString("en-GB", { weekday: "long", timeZone: "UTC" });
+    let facts = `<span>${wdName}</span>`;
+    if (s.sr != null) facts += `<span>Sunrise <b>${hhmm(s.sr)}</b></span><span>Sunset <b>${hhmm(s.ss)}</b></span>`;
+    if (s.closed) {
+      $("dayFacts").innerHTML = facts + `<span class="closed-note">Closed: ${esc(s.closed)}</span>`;
+      $("sheet").innerHTML = `<p style="padding:14px;margin:0;color:var(--muted)">No tee times on this date.</p>`;
+      return;
+    }
+    facts += `<span>First tee <b>${hhmm(s.first)}</b>${s.late ? " (maintenance)" : ""}</span><span>Last 18 <b>${s.last18 != null ? hhmm(s.last18) : "–"}</b></span>`;
+    facts += `<span><b>${s.n18}</b> × 18 · <b>${s.n9}</b> × 9 · <b>${(s.n18 + s.n9) * cfg.players}</b> players</span>`;
+    $("dayFacts").innerHTML = facts;
+    const times = [...new Set(s.slots.map((x) => x.t).concat(s.blocked.map((x) => x.t)))].sort((a, b) => a - b);
+    const cell = (t, tee) => {
+      const sl = s.slots.find((x) => x.t === t && x.tee === tee);
+      if (sl) return `<span class="chip c${sl.k}">${sl.k} holes</span>`;
+      if (s.blocked.some((x) => x.t === t && x.tee === tee)) return `<span class="chip cx">crossover</span>`;
+      return `<span style="color:var(--muted)">·</span>`;
+    };
+    $("sheet").innerHTML = times.length
+      ? `<table><thead><tr><th>Time</th><th>Tee 1</th>${cfg.twoTee ? "<th>Tee 10</th>" : ""}</tr></thead><tbody>${times.map((t) => `<tr><td>${hhmm(t)}</td><td>${cell(t, 1)}</td>${cfg.twoTee ? `<td>${cell(t, 10)}</td>` : ""}</tr>`).join("")}</tbody></table>`
+      : `<p style="padding:14px;margin:0;color:var(--muted)">Not enough daylight for a round with these rules.</p>`;
+  }
+
+  let current = null;
+  function update() {
+    const cfg = readCfg();
+    const Y = computeYear(cfg);
+    current = { cfg, Y };
+    renderHeader(cfg, Y); renderBand(cfg, Y); renderBars(cfg, Y); renderTable(cfg, Y); renderDay(cfg);
+    save();
+  }
+
+  // ---------- Exports ----------
+  let toastTimer;
+  function toast(msg) { const t = $("toast"); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 3500); }
+  let dlPromise = null;
+  const inClaude = !!(window.claude && window.claude.use);
+  const getDownloads = () => (dlPromise ||= (window.claude && window.claude.use ? window.claude.use("downloads") : Promise.resolve(null)).catch(() => null));
+  const fileBase = (cfg) => `${cfg.name.replace(/[\\/:*?"<>|]+/g, " ").trim() || "Course"} capacity ${cfg.year}`;
+
+  function assumptionRows(cfg) {
+    const week = WEEK.map(([d, n]) => { const r = cfg.weekRules[d]; return r.mode === "open" ? null : `${n} ${r.mode === "closed" ? "closed" : "opens " + hhmm(r.time)}`; }).filter(Boolean).join(", ") || "None";
+    return [
+      ["Course", cfg.name], ["Year", cfg.year], ["Latitude", cfg.lat], ["Longitude", cfg.lon], ["Time zone", cfg.tz],
+      ["Tee interval (min)", cfg.interval], ["18-hole round (min)", cfg.round], ["Front 9 (min)", cfg.nine], ["Players per group", cfg.players],
+      ["First tee not before", hhmm(cfg.earliest)], ["Minutes after sunrise", cfg.srOffset], ["Finish relative to sunset (min)", cfg.buffer],
+      ["Twilight 9-hole tee times", cfg.twilight ? "Yes" : "No"], ["Two-tee starts", cfg.twoTee ? `Yes, tee 10 until ${hhmm(cfg.tee10Until)}` : "No"],
+      ["Weekly maintenance", week], ["Closed dates", cfg.closuresText.trim().split("\n").filter(Boolean).join("; ") || "None"],
+      ["Average 18-hole fee (EUR)", cfg.fee18], ["Average 9-hole fee (EUR)", cfg.fee9], ["Expected occupancy", Math.round(cfg.occ * 100) + "%"],
+    ];
+  }
+
+  async function offer(filename, data) {
+    const dl = await getDownloads();
+    if (!dl) {
+      if (inClaude) { toast("Export works when this page is opened in Claude."); return; }
+      // Standalone hosting (e.g. Vercel): a normal browser download
+      const url = URL.createObjectURL(data instanceof Blob ? data : new Blob([data]));
+      const a = document.createElement("a"); a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      toast(`Downloaded ${filename}`);
+      return;
+    }
+    try { await dl.save({ filename, data }); toast(`Saved ${filename}`); }
+    catch (e) {
+      const c = e && e.code;
+      if (c === "declined") return;
+      if (c === "rate_limited") toast("A save prompt is already open. Try again in a moment.");
+      else toast("This view can't save files. Open the page in Claude to export.");
+    }
+  }
+
+  async function exportXlsx() {
+    if (!window.XLSX) { toast("The Excel library didn't load. Reload the page and try again."); return; }
+    const { cfg, Y } = current;
+    const wb = XLSX.utils.book_new();
+    const t = Y.tot;
+    const summary = [
+      [`${cfg.name} — tee sheet capacity ${cfg.year}`], [],
+      ["Headline", "Value"],
+      ["Player rounds (max)", t.r18 + t.r9], ["18-hole player rounds", t.r18], ["9-hole player rounds", t.r9],
+      ["18-hole tee times", t.t18], ["9-hole tee times", t.t9], ["Open days", t.open], ["Closed days", t.closed],
+      ["Green fee ceiling (EUR)", Math.round(t.rev)], [`Forecast at ${Math.round(cfg.occ * 100)}% (EUR)`, Math.round(t.rev * cfg.occ)],
+      [], ["Assumption", "Value"], ...assumptionRows(cfg),
+    ];
+    const ws1 = XLSX.utils.aoa_to_sheet(summary); ws1["!cols"] = [{ wch: 34 }, { wch: 60 }];
+    XLSX.utils.book_append_sheet(wb, ws1, "Summary");
+
+    const mr = monthRows(cfg, Y);
+    const ws2 = XLSX.utils.aoa_to_sheet([["Month", "Open days", "Days", "Avg daylight", "Avg first tee", "Avg last 18", "18 tee times", "9 tee times", "Max player rounds", "Forecast rounds", "Green fee ceiling (EUR)"],
+      ...mr.map((r) => [r.month, r.open, r.days, r.daylight, r.first, r.last, r.t18, r.t9, r.rounds, r.fc, Math.round(r.rev)]),
+      ["Year", t.open, Y.days.length, "", "", "", t.t18, t.t9, t.r18 + t.r9, Math.round((t.r18 + t.r9) * cfg.occ), Math.round(t.rev)]]);
+    ws2["!cols"] = Array(11).fill({ wch: 14 });
+    XLSX.utils.book_append_sheet(wb, ws2, "Monthly");
+
+    const ws3 = XLSX.utils.aoa_to_sheet([["Date", "Weekday", "Status", "Sunrise", "Sunset", "First tee", "Last 18", "Last 9", "18 tee times", "9 tee times", "Player rounds"],
+      ...Y.days.map((d) => [d.key, WD[d.wd], d.closed ? d.closed : d.late ? "Open (late start)" : "Open", hhmm(d.sr), hhmm(d.ss), d.closed ? "" : hhmm(d.first), hhmm(d.last18), hhmm(d.last9), d.n18, d.n9, (d.n18 + d.n9) * cfg.players])]);
+    ws3["!cols"] = [{ wch: 12 }, { wch: 9 }, { wch: 20 }, ...Array(8).fill({ wch: 11 })];
+    XLSX.utils.book_append_sheet(wb, ws3, "Daily");
+
+    const slots = [["Date", "Weekday", "Time", "Tee", "Holes", "Players"]];
+    Y.days.forEach((d) => d.slots.slice().sort((a, b) => a.t - b.t || a.tee - b.tee).forEach((s) => slots.push([d.key, WD[d.wd], hhmm(s.t), s.tee, s.k, cfg.players])));
+    const ws4 = XLSX.utils.aoa_to_sheet(slots); ws4["!cols"] = [{ wch: 12 }, { wch: 9 }, { wch: 8 }, { wch: 6 }, { wch: 7 }, { wch: 8 }];
+    XLSX.utils.book_append_sheet(wb, ws4, "Tee times");
+
+    const buf = XLSX.write(wb, { bookType: "xlsx", type: "array", compression: true });
+    await offer(fileBase(cfg) + ".xlsx", new Blob([buf]));
+  }
+
+  async function exportPdf() {
+    if (!window.jspdf || !window.jspdf.jsPDF) { toast("The PDF library didn't load. Reload the page and try again."); return; }
+    const { cfg, Y } = current;
+    const doc = new window.jspdf.jsPDF({ unit: "mm", format: "a4" });
+    const PW = 210, M = 14;
+    const green = [15, 90, 58], amber = [185, 125, 6], ink = [16, 26, 20], muted = [89, 102, 94];
+    doc.setFillColor(15, 59, 41); doc.rect(0, 0, PW, 38, "F");
+    doc.setTextColor(169, 195, 179); doc.setFont("helvetica", "normal"); doc.setFontSize(8);
+    doc.text(`TEE SHEET CAPACITY · ${cfg.year}`, M, 12);
+    doc.setTextColor(241, 246, 242); doc.setFont("helvetica", "bold"); doc.setFontSize(20);
+    doc.text(doc.splitTextToSize(cfg.name, PW - 2 * M)[0], M, 22);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(8.5); doc.setTextColor(169, 195, 179);
+    doc.text($("whereOut").textContent.replace(/°/g, " "), M, 30);
+
+    const t = Y.tot;
+    const kp = [["Player rounds", fmtInt(t.r18 + t.r9)], ["Tee times", fmtInt(t.t18 + t.t9)], ["Open days", fmtInt(t.open)], ["Per open day", t.open ? fmtInt((t.r18 + t.r9) / t.open) : "0"]];
+    if (cfg.fee18 || cfg.fee9) kp.push(["Fee ceiling", "EUR " + fmtInt(t.rev)]);
+    const kw = (PW - 2 * M) / kp.length;
+    kp.forEach(([k, v], i) => {
+      doc.setTextColor(...muted); doc.setFontSize(7.5); doc.text(k.toUpperCase(), M + i * kw, 48);
+      doc.setTextColor(...ink); doc.setFont("helvetica", "bold"); doc.setFontSize(14); doc.text(v, M + i * kw, 55); doc.setFont("helvetica", "normal");
+    });
+
+    // Monthly bar chart
+    let y0 = 64;
+    doc.setFontSize(10); doc.setFont("helvetica", "bold"); doc.setTextColor(...ink); doc.text("Player rounds by month", M, y0); doc.setFont("helvetica", "normal");
+    const cx = M + 12, cy = y0 + 4, cw = PW - 2 * M - 12, ch = 48;
+    const vals = Y.months.map((m) => ({ a: m.t18 * cfg.players, b: m.t9 * cfg.players }));
+    const max = niceMax(Math.max(...vals.map((v) => v.a + v.b)));
+    doc.setDrawColor(220, 227, 219); doc.setLineWidth(0.2); doc.setFontSize(6.5); doc.setTextColor(...muted);
+    for (let k = 0; k <= 4; k++) { const yy = cy + ch - (ch * k) / 4; doc.line(cx, yy, cx + cw, yy); doc.text(fmtInt((max / 4) * k), cx - 2, yy + 1, { align: "right" }); }
+    const bw = cw / 12;
+    vals.forEach((v, k) => {
+      const x = cx + k * bw + bw * 0.2, w = bw * 0.6, ha = (ch * v.a) / max, hb = (ch * v.b) / max;
+      doc.setFillColor(...green); if (ha > 0) doc.rect(x, cy + ch - ha, w, ha, "F");
+      doc.setFillColor(...amber); if (hb > 0) doc.rect(x, cy + ch - ha - hb, w, hb, "F");
+      doc.text(MONTHS[k], x + w / 2, cy + ch + 4, { align: "center" });
+    });
+    doc.setFillColor(...green); doc.rect(PW - M - 52, y0 - 2.5, 3, 3, "F"); doc.text("18 holes", PW - M - 48, y0);
+    doc.setFillColor(...amber); doc.rect(PW - M - 26, y0 - 2.5, 3, 3, "F"); doc.text("9 holes", PW - M - 22, y0);
+
+    const mr = monthRows(cfg, Y);
+    doc.autoTable({
+      startY: cy + ch + 10, margin: { left: M, right: M },
+      head: [["Month", "Open", "Daylight", "First tee", "Last 18", "18 tee times", "9 tee times", "Max rounds", "Forecast"]],
+      body: mr.map((r) => [r.month, `${r.open}/${r.days}`, r.daylight, r.first || "-", r.last || "-", fmtInt(r.t18), fmtInt(r.t9), fmtInt(r.rounds), fmtInt(r.fc)]),
+      foot: [["Year", String(t.open), "", "", "", fmtInt(t.t18), fmtInt(t.t9), fmtInt(t.r18 + t.r9), fmtInt((t.r18 + t.r9) * cfg.occ)]],
+      styles: { fontSize: 8, cellPadding: 1.6, textColor: ink, halign: "right" },
+      columnStyles: { 0: { halign: "left" } },
+      headStyles: { fillColor: [238, 242, 237], textColor: muted, fontStyle: "bold", halign: "right" },
+      footStyles: { fillColor: [255, 255, 255], textColor: ink, fontStyle: "bold", halign: "right" },
+      theme: "grid", tableLineColor: [220, 227, 219], tableLineWidth: 0.1,
+    });
+    doc.autoTable({
+      startY: doc.lastAutoTable.finalY + 8, margin: { left: M, right: M },
+      head: [["Assumption", "Value"]], body: assumptionRows(cfg).map(([a, b]) => [a, String(b)]),
+      styles: { fontSize: 8, cellPadding: 1.6, textColor: ink }, columnStyles: { 0: { cellWidth: 62 } },
+      headStyles: { fillColor: [238, 242, 237], textColor: muted, fontStyle: "bold" },
+      theme: "grid", tableLineColor: [220, 227, 219], tableLineWidth: 0.1,
+    });
+    const pages = doc.getNumberOfPages();
+    for (let p = 1; p <= pages; p++) {
+      doc.setPage(p); doc.setFontSize(7); doc.setTextColor(...muted);
+      doc.text(`Theoretical maximum: every slot sold with a full group. Generated ${new Date().toISOString().slice(0, 10)}.`, M, 290);
+      doc.text(`${p} / ${pages}`, PW - M, 290, { align: "right" });
+    }
+    await offer(fileBase(cfg) + ".pdf", doc.output("blob"));
+  }
+
+  function guard(btn, fn) {
+    btn.addEventListener("click", async () => {
+      btn.disabled = true;
+      try { await fn(); } catch (e) { toast("Export failed. Check the inputs and try again."); }
+      finally { btn.disabled = false; }
+    });
+  }
+  guard($("xlsxBtn"), exportXlsx);
+  guard($("pdfBtn"), exportPdf);
+  getDownloads().then((dl) => { if (!dl && inClaude) ["xlsxBtn", "pdfBtn"].forEach((id) => { $(id).disabled = true; $(id).title = "Export works when this page is opened in Claude"; }); });
+
+  $("form").addEventListener("input", update);
+  $("form").addEventListener("change", update);
+  $("day").addEventListener("change", () => renderDay(readCfg()));
+  $("reset").addEventListener("click", () => {
+    allIds.forEach((id) => { const el = $(id); if (el.type === "checkbox") el.checked = defaults[id]; else el.value = defaults[id]; });
+    update();
+  });
+  update();
+})();
+</script>
